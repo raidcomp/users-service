@@ -1,4 +1,4 @@
-module github.com/Dr-Evans/raidcomp/users-service
+module github.com/raidcomp/users-service
 
 go 1.19
 

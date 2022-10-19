@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	pb "github.com/Dr-Evans/raidcomp/users-service/proto"
+	pb "github.com/raidcomp/users-service/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"

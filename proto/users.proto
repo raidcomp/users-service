@@ -7,6 +7,8 @@ option go_package = "github.com/raidcomp/users-service";
 
 service Users {
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
+
+  // Get a User by ID or login. Will check by ID first, then login
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
 }
 
@@ -21,6 +23,7 @@ message CreateUserResponse {
 
 message GetUserRequest {
   string id = 1;
+  string login = 2;
 }
 
 message GetUserResponse {

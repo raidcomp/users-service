@@ -25,4 +25,30 @@ resource "aws_dynamodb_table" "users_dynamo_table" {
     name = "userID"
     type = "S"
   }
+
+  attribute {
+    name = "login"
+    type = "S"
+  }
+
+  attribute {
+    name = "email"
+    type = "S"
+  }
+
+  global_secondary_index {
+    hash_key        = "login"
+    name            = "LoginIndex"
+    projection_type = "ALL"
+    write_capacity = 5
+    read_capacity = 5
+  }
+
+  global_secondary_index {
+    hash_key        = "email"
+    name            = "EmailIndex"
+    projection_type = "ALL"
+    write_capacity = 5
+    read_capacity = 5
+  }
 }

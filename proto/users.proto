@@ -1,12 +1,22 @@
 syntax = "proto3";
+package users;
 
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/raidcomp/users-service";
-package users;
 
 service Users {
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
+}
+
+message CreateUserRequest {
+  string login = 1;
+  string email = 2;
+}
+
+message CreateUserResponse {
+  User user = 1;
 }
 
 message GetUserRequest {

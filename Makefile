@@ -5,4 +5,4 @@ fmt:
 	go fmt ./server
 
 run:
-	go run ./server/main.go
+	go run main.go

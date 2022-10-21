@@ -32,7 +32,7 @@ func (u usersServerImpl) CreateUser(ctx context.Context, req *pb.CreateUserReque
 		return nil, status.Errorf(codes.AlreadyExists, "a user with login %s already exists", req.Login)
 	}
 
-	newUser, err := u.UsersDAO.CreateUser(ctx, req.Login, req.Email)
+	newUser, err := u.UsersDAO.CreateUser(ctx, req.Login, req.Email, req.Password)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "error creating user")
 	}

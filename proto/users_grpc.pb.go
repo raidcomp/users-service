@@ -23,7 +23,10 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UsersClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
+	// Get a User by ID or login.
+	// Will check by ID first, then login.
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	CheckUserPassword(ctx context.Context, in *CheckUserPasswordRequest, opts ...grpc.CallOption) (*CheckUserPasswordResponse, error)
 }
 
 type usersClient struct {
@@ -52,12 +55,24 @@ func (c *usersClient) GetUser(ctx context.Context, in *GetUserRequest, opts ...g
 	return out, nil
 }
 
+func (c *usersClient) CheckUserPassword(ctx context.Context, in *CheckUserPasswordRequest, opts ...grpc.CallOption) (*CheckUserPasswordResponse, error) {
+	out := new(CheckUserPasswordResponse)
+	err := c.cc.Invoke(ctx, "/users.Users/CheckUserPassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UsersServer is the server API for Users service.
 // All implementations must embed UnimplementedUsersServer
 // for forward compatibility
 type UsersServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
+	// Get a User by ID or login.
+	// Will check by ID first, then login.
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
+	CheckUserPassword(context.Context, *CheckUserPasswordRequest) (*CheckUserPasswordResponse, error)
 	mustEmbedUnimplementedUsersServer()
 }
 
@@ -70,6 +85,9 @@ func (UnimplementedUsersServer) CreateUser(context.Context, *CreateUserRequest) 
 }
 func (UnimplementedUsersServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
+}
+func (UnimplementedUsersServer) CheckUserPassword(context.Context, *CheckUserPasswordRequest) (*CheckUserPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckUserPassword not implemented")
 }
 func (UnimplementedUsersServer) mustEmbedUnimplementedUsersServer() {}
 
@@ -120,6 +138,24 @@ func _Users_GetUser_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Users_CheckUserPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckUserPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServer).CheckUserPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/users.Users/CheckUserPassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServer).CheckUserPassword(ctx, req.(*CheckUserPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Users_ServiceDesc is the grpc.ServiceDesc for Users service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +170,10 @@ var Users_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUser",
 			Handler:    _Users_GetUser_Handler,
+		},
+		{
+			MethodName: "CheckUserPassword",
+			Handler:    _Users_CheckUserPassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

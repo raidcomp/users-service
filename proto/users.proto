@@ -8,13 +8,25 @@ option go_package = "github.com/raidcomp/users-service";
 service Users {
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
 
-  // Get a User by ID or login. Will check by ID first, then login
+  // Get a User by ID or login.
+  // Will check by ID first, then login.
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
+
+  rpc CheckUserPassword(CheckUserPasswordRequest) returns (CheckUserPasswordResponse) {}
+}
+
+message User {
+  string id = 1;
+  string login = 2;
+  string email = 3;
+  google.protobuf.Timestamp createdAt = 4;
+  google.protobuf.Timestamp updatedAt = 5;
 }
 
 message CreateUserRequest {
   string login = 1;
   string email = 2;
+  string password = 3;
 }
 
 message CreateUserResponse {
@@ -30,10 +42,8 @@ message GetUserResponse {
   User user = 1;
 }
 
-message User {
-  string id = 1;
-  string login = 2;
-  string email = 3;
-  google.protobuf.Timestamp createdAt = 4;
-  google.protobuf.Timestamp updatedAt = 5;
+message CheckUserPasswordRequest {
+  string hashedPassword = 1;
 }
+
+message CheckUserPasswordResponse {}

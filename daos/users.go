@@ -8,23 +8,25 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/google/uuid"
+	"github.com/raidcomp/users-service/auth"
 	"log"
 	"time"
 )
 
 type User struct {
-	UserID    string    `dynamodbav:"userID"`
-	Login     string    `dynamodbav:"login"`
-	Email     string    `dynamodbav:"email"`
-	CreatedAt time.Time `dynamodbav:"createdAt"`
-	UpdatedAt time.Time `dynamodbav:"updatedAt"`
+	UserID         string    `dynamodbav:"userID"`
+	Login          string    `dynamodbav:"login"`
+	Email          string    `dynamodbav:"email"`
+	HashedPassword string    `dynamodbav:"hashed_password"`
+	CreatedAt      time.Time `dynamodbav:"createdAt"`
+	UpdatedAt      time.Time `dynamodbav:"updatedAt"`
 }
 
 const LOGIN_INDEX = "LoginIndex"
 const EMAIL_INDEX = "EmailIndex"
 
 type UsersDAO interface {
-	CreateUser(ctx context.Context, login, email string) (User, error)
+	CreateUser(ctx context.Context, login, email, rawPassword string) (User, error)
 	GetUserByID(ctx context.Context, id string) (*User, error)
 	GetUserByLogin(ctx context.Context, login string) (*User, error)
 }
@@ -42,14 +44,20 @@ func NewUsersDAO(dynamoDBClient *dynamodb.Client) UsersDAO {
 	}
 }
 
-func (dao usersDAOImpl) CreateUser(ctx context.Context, login, email string) (User, error) {
+func (dao usersDAOImpl) CreateUser(ctx context.Context, login, email, rawPassword string) (User, error) {
+	hashedPassword, err := auth.HashPassword(rawPassword)
+	if err != nil {
+		return User{}, err
+	}
+
 	now := time.Now()
 	newUser := User{
-		UserID:    uuid.New().String(),
-		Login:     login,
-		Email:     email,
-		CreatedAt: now,
-		UpdatedAt: now,
+		UserID:         uuid.NewString(),
+		Login:          login,
+		Email:          email,
+		HashedPassword: hashedPassword,
+		CreatedAt:      now,
+		UpdatedAt:      now,
 	}
 
 	putItem, err := attributevalue.MarshalMap(newUser)
@@ -109,6 +117,7 @@ func (dao usersDAOImpl) GetUserByLogin(ctx context.Context, login string) (*User
 		ExpressionAttributeValues: expr.Values(),
 		FilterExpression:          expr.Filter(),
 		ProjectionExpression:      expr.Projection(),
+		Limit:                     aws.Int32(1),
 	})
 	if err != nil {
 		return nil, err

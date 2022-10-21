@@ -91,11 +91,11 @@ func (u usersServerImpl) CheckUserPassword(ctx context.Context, req *pb.CheckUse
 	}
 
 	if user == nil {
-		return nil, status.Errorf(codes.NotFound, "user for userID %s not found", req.Id)
+		return nil, status.Errorf(codes.NotFound, "user for userID %s not found", user.UserID)
 	}
 
 	if !auth.CheckPasswordHash(user.HashedPassword, req.Password) {
-		return nil, status.Errorf(codes.InvalidArgument, "password does not match userID %s password", req.Id)
+		return nil, status.Errorf(codes.InvalidArgument, "password does not match userID %s password", user.UserID)
 	}
 
 	return &pb.CheckUserPasswordResponse{}, nil

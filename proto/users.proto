@@ -12,6 +12,8 @@ service Users {
   // Will check by ID first, then login.
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
 
+  // Check password by ID or login.
+  // Will check by ID first, then login.
   rpc CheckUserPassword(CheckUserPasswordRequest) returns (CheckUserPasswordResponse) {}
 }
 
@@ -44,7 +46,8 @@ message GetUserResponse {
 
 message CheckUserPasswordRequest {
   string id = 1;
-  string password = 2;
+  string login = 2;
+  string password = 3;
 }
 
 message CheckUserPasswordResponse {}

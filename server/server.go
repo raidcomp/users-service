@@ -78,7 +78,14 @@ func (u usersServerImpl) GetUser(ctx context.Context, req *pb.GetUserRequest) (*
 }
 
 func (u usersServerImpl) CheckUserPassword(ctx context.Context, req *pb.CheckUserPasswordRequest) (*pb.CheckUserPasswordResponse, error) {
-	user, err := u.UsersDAO.GetUserByID(ctx, req.Id)
+	var user *daos.User
+	var err error
+	if req.Id != "" {
+		user, err = u.UsersDAO.GetUserByID(ctx, req.Id)
+	} else if req.Login != "" {
+		user, err = u.UsersDAO.GetUserByLogin(ctx, req.Login)
+	}
+
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "error getting user")
 	}

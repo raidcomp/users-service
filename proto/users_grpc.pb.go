@@ -26,6 +26,8 @@ type UsersClient interface {
 	// Get a User by ID or login.
 	// Will check by ID first, then login.
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
+	// Check password by ID or login.
+	// Will check by ID first, then login.
 	CheckUserPassword(ctx context.Context, in *CheckUserPasswordRequest, opts ...grpc.CallOption) (*CheckUserPasswordResponse, error)
 }
 
@@ -72,6 +74,8 @@ type UsersServer interface {
 	// Get a User by ID or login.
 	// Will check by ID first, then login.
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
+	// Check password by ID or login.
+	// Will check by ID first, then login.
 	CheckUserPassword(context.Context, *CheckUserPasswordRequest) (*CheckUserPasswordResponse, error)
 	mustEmbedUnimplementedUsersServer()
 }

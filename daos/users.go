@@ -103,8 +103,8 @@ func (dao usersDAOImpl) GetUserByID(ctx context.Context, id string) (*User, erro
 }
 
 func (dao usersDAOImpl) GetUserByLogin(ctx context.Context, login string) (*User, error) {
-	filter := expression.Name("login").Equal(expression.Value(login))
-	expr, err := expression.NewBuilder().WithFilter(filter).Build()
+	cond := expression.Name("login").Equal(expression.Value(login))
+	expr, err := expression.NewBuilder().WithCondition(cond).Build()
 	if err != nil {
 		log.Panicf("error creating expression, %v", err)
 	}
@@ -112,11 +112,9 @@ func (dao usersDAOImpl) GetUserByLogin(ctx context.Context, login string) (*User
 	queryOutput, err := dao.DynamoDBClient.Query(ctx, &dynamodb.QueryInput{
 		TableName:                 aws.String(dao.tableName),
 		IndexName:                 aws.String(LOGIN_INDEX),
-		KeyConditionExpression:    expr.KeyCondition(),
+		KeyConditionExpression:    expr.Condition(),
 		ExpressionAttributeNames:  expr.Names(),
 		ExpressionAttributeValues: expr.Values(),
-		FilterExpression:          expr.Filter(),
-		ProjectionExpression:      expr.Projection(),
 		Limit:                     aws.Int32(1),
 	})
 	if err != nil {

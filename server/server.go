@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"github.com/raidcomp/users-service/auth"
 	"github.com/raidcomp/users-service/daos"
 	pb "github.com/raidcomp/users-service/proto"
 	"google.golang.org/grpc/codes"
@@ -74,4 +75,21 @@ func (u usersServerImpl) GetUser(ctx context.Context, req *pb.GetUserRequest) (*
 			UpdatedAt: timestamppb.New(user.UpdatedAt),
 		},
 	}, nil
+}
+
+func (u usersServerImpl) CheckUserPassword(ctx context.Context, req *pb.CheckUserPasswordRequest) (*pb.CheckUserPasswordResponse, error) {
+	user, err := u.UsersDAO.GetUserByID(ctx, req.Id)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "error getting user")
+	}
+
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user for userID %s not found", req.Id)
+	}
+
+	if !auth.CheckPasswordHash(user.HashedPassword, req.Password) {
+		return nil, status.Errorf(codes.InvalidArgument, "password does not match userID %s password", req.Id)
+	}
+
+	return &pb.CheckUserPasswordResponse{}, nil
 }

@@ -44,7 +44,7 @@ message GetUserResponse {
 
 message CheckUserPasswordRequest {
   string id = 1;
-  string hashedPassword = 2;
+  string password = 2;
 }
 
 message CheckUserPasswordResponse {}

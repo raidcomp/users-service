@@ -23,6 +23,11 @@ func NewUsersServer(usersDAO daos.UsersDAO) pb.UsersServer {
 }
 
 func (u usersServerImpl) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+	err := req.Validate()
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
 	// Check that login is not in use first
 	userByLogin, err := u.UsersDAO.GetUserByLogin(ctx, req.Login)
 	if err != nil {
@@ -50,8 +55,12 @@ func (u usersServerImpl) CreateUser(ctx context.Context, req *pb.CreateUserReque
 }
 
 func (u usersServerImpl) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
+	err := req.Validate()
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
 	var user *daos.User
-	var err error
 	if req.Id != "" {
 		user, err = u.UsersDAO.GetUserByID(ctx, req.Id)
 	} else if req.Login != "" {
@@ -78,8 +87,12 @@ func (u usersServerImpl) GetUser(ctx context.Context, req *pb.GetUserRequest) (*
 }
 
 func (u usersServerImpl) CheckUserPassword(ctx context.Context, req *pb.CheckUserPasswordRequest) (*pb.CheckUserPasswordResponse, error) {
+	err := req.Validate()
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
 	var user *daos.User
-	var err error
 	if req.Id != "" {
 		user, err = u.UsersDAO.GetUserByID(ctx, req.Id)
 	} else if req.Login != "" {

@@ -2,6 +2,7 @@ syntax = "proto3";
 package users;
 
 import "google/protobuf/timestamp.proto";
+import "validate/validate.proto";
 
 option go_package = "github.com/raidcomp/users-service";
 
@@ -27,7 +28,7 @@ message User {
 
 message CreateUserRequest {
   string login = 1;
-  string email = 2;
+  string email = 2 [(validate.rules).string.email = true];
   string password = 3;
 }
 

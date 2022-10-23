@@ -27,9 +27,28 @@ message User {
 }
 
 message CreateUserRequest {
-  string login = 1 [(validate.rules).string = {min_len: 6, max_len: 18}];
+  /*
+    1) Number of characters must be between 6 to 20 inclusive.
+    2) Only contains alphanumeric characters, underscore and dot.
+    3) Underscore and dot can't be at the end or start of a login (e.g _login / login_ / .login / login.).
+    4) Underscore and dot can't be next to each other (e.g log_.in).
+    5) Underscore or dot can't be used multiple times in a row (e.g log__in / log..in).
+     */
+  string login = 1 [(validate.rules).string = {
+    min_len: 6,
+    max_len: 25,
+  }];
   string email = 2 [(validate.rules).string.email = true];
-  string password = 3 [(validate.rules).string = {min_len: 8, max_len: 25}];
+  /*
+    1) Number of characters must be between 8 to 40 inclusive.
+    2) Must contain 1 lowercase character.
+    3) Must contain 1 uppercase character.
+    4) Must contain 1 special character.
+     */
+  string password = 3 [(validate.rules).string = {
+    min_len: 8,
+    max_len: 40,
+  }];
 }
 
 message CreateUserResponse {

@@ -219,7 +219,16 @@ func (m *CreateUserRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Login
+	if l := utf8.RuneCountInString(m.GetLogin()); l < 6 || l > 25 {
+		err := CreateUserRequestValidationError{
+			field:  "Login",
+			reason: "value length must be between 6 and 25 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if err := m._validateEmail(m.GetEmail()); err != nil {
 		err = CreateUserRequestValidationError{
@@ -233,10 +242,10 @@ func (m *CreateUserRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if l := utf8.RuneCountInString(m.GetPassword()); l < 8 || l > 25 {
+	if l := utf8.RuneCountInString(m.GetPassword()); l < 8 || l > 40 {
 		err := CreateUserRequestValidationError{
 			field:  "Password",
-			reason: "value length must be between 8 and 25 runes, inclusive",
+			reason: "value length must be between 8 and 40 runes, inclusive",
 		}
 		if !all {
 			return err

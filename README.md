@@ -23,3 +23,7 @@ Generates the gRPC server code based on the [users.proto](/proto/users.proto) de
 ### `make fmt`
 
 Formats the go code (TODO: format terraform)
+
+## Terraform
+
+All AWS infrastructure is maintained in [/terraform](/terraform) directory. All terraform commands are run from here and require AWS account permissions to perform.

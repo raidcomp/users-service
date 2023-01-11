@@ -5,8 +5,9 @@ Go-Lang gRPC microservice storing and managing users on [raidcomp.io](raidcomp.i
 ## Technologies
 
 - GoLang: microservice code
-- gRPC: service interface definition, protobuf client generation
+- gRPC/protobuf: service interface definition, protobuf client generation
 - GitHub Actions: CI/CD
+- Terraform: infrastructure as code
 - AWS: cloud hosting provider
 
 ## Development
